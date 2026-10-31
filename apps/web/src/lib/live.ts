@@ -264,20 +264,32 @@ export async function connectProvider(patientId: string, providerId: string) {
 }
 
 export async function setGrant(relationshipId: string, categories: string[], includeFuture: boolean) {
+  // Replace semantics: a new grant set revokes every currently active grant for the
+  // relationship first, so narrowing categories can never leave broader latent access.
+  const now = new Date().toISOString();
+  const { error: revErr } = await supabase!
+    .from("access_grants")
+    .update({ revoked_at: now })
+    .eq("relationship_id", relationshipId)
+    .is("revoked_at", null);
+  if (revErr) return { error: revErr.message };
+  if (!categories.length) return {}; // empty selection = full revoke, no new grant
   const { error } = await supabase!.from("access_grants").insert({
     relationship_id: relationshipId,
     categories,
-    from_date: new Date().toISOString().slice(0, 10),
+    from_date: now.slice(0, 10),
     include_future: includeFuture,
   });
   return error ? { error: error.message } : {};
 }
 
-export async function revokeGrant(grantId: string) {
+export async function revokeGrant(relationshipId: string) {
+  // Revoke ALL active grants for the relationship, not just one row.
   const { error } = await supabase!
     .from("access_grants")
     .update({ revoked_at: new Date().toISOString() })
-    .eq("id", grantId);
+    .eq("relationship_id", relationshipId)
+    .is("revoked_at", null);
   return error ? { error: error.message } : {};
 }
 

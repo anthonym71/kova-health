@@ -50,7 +50,7 @@ export function LiveCareTeam({ uid }: { uid: string }) {
 
   async function revoke() {
     if (!selected?.grantId) return;
-    const res = await revokeGrant(selected.grantId);
+    const res = await revokeGrant(selected.relationshipId);
     setNotice(res.error ?? "Access revoked. Future reads are blocked immediately.");
     refresh();
   }
