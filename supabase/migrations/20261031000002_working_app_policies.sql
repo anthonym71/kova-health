@@ -141,3 +141,6 @@ create policy plan_items_provider_insert on care_plan_items
 -- reachable via PostgREST default grants. Enabled with no client policies = service-role only.
 alter table retention_jobs enable row level security;
 alter table source_tombstones enable row level security;
+
+-- One editable goal per category per patient (supports setGoal upsert).
+create unique index if not exists goals_patient_cat_uidx on goals (patient_id, category);

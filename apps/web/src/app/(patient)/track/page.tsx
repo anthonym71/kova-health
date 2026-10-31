@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { BarChart, Card, DemoBanner, PageHeader, PrimaryButton } from "@/components/ui";
 import { GOALS as DEMO_GOALS, WEEK_METRICS } from "@/lib/demo-data";
 import { useSession } from "@/lib/use-session";
-import { fetchGoals, fetchWeekMetrics, logHydration, logObservation, type WeekPoint } from "@/lib/live";
+import { deleteLog, fetchGoals, fetchTodayLogs, fetchWeekMetrics, logHydration, logObservation, setGoal, type TodayLog, type WeekPoint } from "@/lib/live";
 
 const RANGES = ["7 days", "15 days"] as const;
 
@@ -16,13 +16,32 @@ export default function TrackPage() {
   const [data, setData] = useState<WeekPoint[]>(WEEK_METRICS);
   const [goals, setGoals] = useState(DEMO_GOALS);
   const [notice, setNotice] = useState<string | null>(null);
+  const [todayLogs, setTodayLogs] = useState<TodayLog[]>([]);
+  const [waterGoal, setWaterGoal] = useState("2000");
 
   const days = range === "7 days" ? 7 : 15;
   useEffect(() => {
     if (!uid) return;
     fetchWeekMetrics(uid, days).then(setData);
-    fetchGoals(uid).then(setGoals);
+    fetchGoals(uid).then((g) => { setGoals(g); setWaterGoal(String(g.waterMl)); });
+    fetchTodayLogs(uid).then(setTodayLogs);
   }, [uid, days]);
+
+  async function removeLog(l: TodayLog) {
+    const res = await deleteLog(l.table, l.id);
+    setNotice(res.error ?? "Entry deleted.");
+    if (!res.error && uid) { fetchTodayLogs(uid).then(setTodayLogs); fetchWeekMetrics(uid, days).then(setData); }
+  }
+
+  async function saveWaterGoal(e: React.FormEvent) {
+    e.preventDefault();
+    if (!uid) return;
+    const t = Number(waterGoal);
+    if (!Number.isFinite(t) || t <= 0) return setNotice("Enter a positive number of ml.");
+    const res = await setGoal(uid, "hydration", t, "ml");
+    setNotice(res.error ?? `Water goal updated to ${t} ml.`);
+    if (!res.error) fetchGoals(uid).then(setGoals);
+  }
 
   async function quickWater() {
     if (!uid) return setWater((w) => w + 250);
@@ -30,13 +49,14 @@ export default function TrackPage() {
     if (res.error) return setNotice(res.error);
     setNotice("Logged 250 ml of water.");
     fetchWeekMetrics(uid, days).then(setData);
+    fetchTodayLogs(uid).then(setTodayLogs);
   }
 
   async function quickLog(category: "steps" | "sleep" | "activity", value: number, unit: string, label: string) {
     if (!uid) return;
     const res = await logObservation(uid, category, value, unit);
     setNotice(res.error ?? `Logged ${label}.`);
-    if (!res.error) fetchWeekMetrics(uid, days).then(setData);
+    if (!res.error) { fetchWeekMetrics(uid, days).then(setData); fetchTodayLogs(uid).then(setTodayLogs); }
   }
 
   return (
@@ -82,6 +102,40 @@ export default function TrackPage() {
             : "Meal photos go to private storage and need your confirmation. Barcode lookup is a planned integration - manual entry always works."}
         </p>
       </Card>
+
+      {live && (
+        <Card className="mb-4">
+          <h2 className="mb-3 font-semibold text-ink-strong">Water goal</h2>
+          <form className="flex items-center gap-2" onSubmit={saveWaterGoal}>
+            <label htmlFor="water-goal" className="text-sm text-ink-body">Daily target (ml)</label>
+            <input id="water-goal" type="number" min={1} value={waterGoal} onChange={(e) => setWaterGoal(e.target.value)}
+              className="min-h-[44px] w-28 rounded-full border border-surface-sunken bg-surface-overlay px-4 text-sm" />
+            <PrimaryButton type="submit">Save goal</PrimaryButton>
+          </form>
+        </Card>
+      )}
+
+      {live && (
+        <Card className="mb-4">
+          <h2 className="mb-3 font-semibold text-ink-strong">Today's entries</h2>
+          {todayLogs.length === 0 ? (
+            <p className="text-sm text-ink-muted">Nothing logged yet today.</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {todayLogs.map((l) => (
+                <li key={l.id} className="flex items-center justify-between rounded-xl border border-surface-sunken px-3 py-2 text-sm">
+                  <span className="text-ink-body">
+                    {l.category} - {l.value} {l.unit} - {new Date(l.measured_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                  <button onClick={() => removeLog(l)} className="min-h-[44px] rounded-full px-3 text-sm font-medium text-status-danger hover:bg-surface-sunken">
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
 
       <div className="mb-4 flex gap-2" role="tablist" aria-label="Time range">
         {RANGES.map((r) => (

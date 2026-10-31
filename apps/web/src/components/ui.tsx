@@ -48,6 +48,15 @@ export function DemoBanner() {
   );
 }
 
+export function LiveTestBanner() {
+  return (
+    <div className="mb-4 rounded-card border border-status-warn/40 bg-status-warn/10 px-4 py-3 text-sm text-ink-body">
+      <strong className="font-semibold text-status-warn">Hackathon test build.</strong>{" "}
+      Fictional test accounts and data only. Not for real health data or clinical use.
+    </div>
+  );
+}
+
 export function ProgressBar({ value, goal, color = "bg-brand-teal" }: { value: number; goal: number; color?: string }) {
   const pct = Math.min(100, Math.round((value / goal) * 100));
   return (

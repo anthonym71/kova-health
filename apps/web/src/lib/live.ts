@@ -142,6 +142,37 @@ export async function logHydration(patientId: string, ml: number) {
   return error ? { error: error.message } : {};
 }
 
+export interface TodayLog { id: string; table: "observations" | "hydration_logs"; category: string; value: number; unit: string; measured_at: string; }
+
+/** Today's own entries, newest first, for review and deletion. */
+export async function fetchTodayLogs(patientId: string): Promise<TodayLog[]> {
+  const since = dayStartISO(0);
+  const [{ data: obs }, { data: hyd }] = await Promise.all([
+    supabase!.from("observations").select("id, category, value, unit, measured_at").eq("patient_id", patientId).gte("measured_at", since),
+    supabase!.from("hydration_logs").select("id, value, unit, measured_at").eq("patient_id", patientId).gte("measured_at", since),
+  ]);
+  const rows: TodayLog[] = [
+    ...(obs ?? []).map((o) => ({ id: o.id, table: "observations" as const, category: o.category, value: o.value, unit: o.unit, measured_at: o.measured_at })),
+    ...(hyd ?? []).map((h) => ({ id: h.id, table: "hydration_logs" as const, category: "hydration", value: h.value, unit: h.unit, measured_at: h.measured_at })),
+  ];
+  return rows.sort((a, b) => b.measured_at.localeCompare(a.measured_at));
+}
+
+/** Delete one of the patient's own entries (RLS enforces ownership). */
+export async function deleteLog(table: "observations" | "hydration_logs", id: string) {
+  const { error } = await supabase!.from(table).delete().eq("id", id);
+  return error ? { error: error.message } : {};
+}
+
+/** Create or update one of the patient's own goals. */
+export async function setGoal(patientId: string, category: string, target: number, unit: string) {
+  const { error } = await supabase!.from("goals").upsert(
+    { patient_id: patientId, category, target, unit, set_by: patientId },
+    { onConflict: "patient_id,category" }
+  );
+  return error ? { error: error.message } : {};
+}
+
 export async function fetchGoals(patientId: string) {
   const { data } = await supabase!.from("goals").select("category, target, unit").eq("patient_id", patientId);
   const map: Record<string, number> = {};

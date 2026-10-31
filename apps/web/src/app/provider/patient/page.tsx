@@ -13,7 +13,7 @@ function LivePatientDetail() {
   const uid = live ? session.userId : null;
   const [patient, setPatient] = useState<PatientRow | null>(null);
   const [week, setWeek] = useState<WeekPoint[]>([]);
-  const [goals, setGoals] = useState({ steps: 8000, sleepHours: 7.5 });
+  const [goals, setGoals] = useState({ steps: 8000, sleepHours: 7.5, waterMl: 2000 });
   const [task, setTask] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [denied, setDenied] = useState(false);
@@ -27,7 +27,7 @@ function LivePatientDetail() {
       if (!p.categories.length) return setDenied(true);
       fetchSharedMetrics(patientId, p.categories).then(setWeek);
     });
-    fetchGoals(patientId).then((g) => setGoals({ steps: g.steps, sleepHours: g.sleepHours })).catch(() => {});
+    fetchGoals(patientId).then((g) => setGoals({ steps: g.steps, sleepHours: g.sleepHours, waterMl: g.waterMl })).catch(() => {});
   }, [uid, patientId]);
 
   if (!live) {
@@ -84,6 +84,14 @@ function LivePatientDetail() {
             <p className="text-sm text-ink-muted">Outside this patient's grant and hidden.</p>
           )}
           <p className="mt-2 text-xs text-ink-faint">Medications, records and messages are outside data grants and always hidden.</p>
+        </Card>
+        <Card>
+          <h2 className="mb-3 font-semibold text-ink-strong">Hydration {canSee("hydration") ? "(shared category)" : "(not shared)"}</h2>
+          {canSee("hydration") ? (
+            <BarChart values={week.map((d) => d.waterMl)} goal={goals.waterMl} labels={week.map((d) => d.day)} unit="ml" />
+          ) : (
+            <p className="text-sm text-ink-muted">Outside this patient's grant and hidden.</p>
+          )}
         </Card>
       </div>
 
