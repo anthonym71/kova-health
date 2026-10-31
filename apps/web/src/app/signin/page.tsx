@@ -1,11 +1,29 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, PageHeader, PrimaryButton } from "@/components/ui";
-import { isLive } from "@/lib/supabase";
+import { isLive, supabase } from "@/lib/supabase";
 import { signIn, signUpPatient } from "@/lib/live";
 
+async function myRole(): Promise<string> {
+  const { data } = await supabase!.auth.getSession();
+  const uid = data.session?.user.id;
+  if (!uid) return "patient";
+  const { data: profile } = await supabase!.from("profiles").select("role").eq("id", uid).single();
+  return profile?.role ?? "patient";
+}
+
 export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInInner />
+    </Suspense>
+  );
+}
+
+function SignInInner() {
+  const params = useSearchParams();
+  const asRole = params.get("role") === "provider" ? "provider" : "patient";
   const router = useRouter();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [name, setName] = useState("");
@@ -51,9 +69,21 @@ export default function SignInPage() {
       return;
     }
     const res = await signIn(email, password);
+    if (res.error) { setBusy(false); return setError(res.error); }
+    // Route by the account's verified role, never by the form the user picked.
+    const role = await myRole();
     setBusy(false);
-    if (res.error) return setError(res.error);
-    router.replace("/today");
+    if (asRole === "provider" && role !== "provider") {
+      setInfo("This is a patient account, so we opened the patient view. Provider access is verified separately and can never be self-assigned.");
+      setTimeout(() => router.replace("/today"), 1800);
+      return;
+    }
+    if (asRole === "patient" && role === "provider") {
+      setInfo("This is a verified provider account, so we opened the provider workspace.");
+      setTimeout(() => router.replace("/provider"), 1800);
+      return;
+    }
+    router.replace(role === "provider" ? "/provider" : "/today");
   }
 
   return (
@@ -61,7 +91,9 @@ export default function SignInPage() {
       <PageHeader title="Kova Health" subtitle="Sign in to your account" />
       <Card>
         <h2 className="mb-4 font-semibold text-ink-strong">
-          {mode === "signin" ? "Sign in" : "Create a patient account"}
+          {mode === "signin"
+            ? asRole === "provider" ? "Provider sign in" : "Patient sign in"
+            : "Create a patient account"}
         </h2>
         <form onSubmit={submit} className="flex flex-col gap-3">
           {mode === "signup" && (
@@ -108,7 +140,8 @@ export default function SignInPage() {
         </button>
         <p className="mt-3 text-xs text-ink-faint">
           Public sign-up creates patient accounts only. Provider access is verified separately and
-          can never be self-assigned.
+          can never be self-assigned. Your account role decides what you can see, whichever
+          sign-in button you used.
         </p>
       </Card>
     </main>

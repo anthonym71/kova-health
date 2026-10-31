@@ -13,7 +13,7 @@ function LivePatientDetail() {
   const uid = live ? session.userId : null;
   const [patient, setPatient] = useState<PatientRow | null>(null);
   const [week, setWeek] = useState<WeekPoint[]>([]);
-  const [goals, setGoals] = useState({ steps: 8000, sleepHours: 7.5, waterMl: 2000 });
+  const [goals, setGoals] = useState<{ steps: number | null; sleepHours: number | null; waterMl: number | null }>({ steps: null, sleepHours: null, waterMl: null });
   const [task, setTask] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [denied, setDenied] = useState(false);
@@ -27,7 +27,7 @@ function LivePatientDetail() {
       if (!p.categories.length) return setDenied(true);
       fetchSharedMetrics(patientId, p.categories).then(setWeek);
     });
-    fetchGoals(patientId).then((g) => setGoals({ steps: g.steps, sleepHours: g.sleepHours, waterMl: g.waterMl })).catch(() => {});
+    fetchGoals(patientId).then((g) => setGoals({ steps: g.steps, sleepHours: g.sleepHours, waterMl: g.waterMl })).catch(() => setGoals({ steps: null, sleepHours: null, waterMl: null }));
   }, [uid, patientId]);
 
   if (!live) {
@@ -35,6 +35,14 @@ function LivePatientDetail() {
       <>
         <PageHeader title="Patient detail" />
         <Card><p className="text-sm text-ink-muted">Sign in with a verified provider account to view shared patient data.</p></Card>
+      </>
+    );
+  }
+  if (!denied && !patient) {
+    return (
+      <>
+        <PageHeader title="Patient detail" subtitle="Permitted data only" />
+        <Card><p className="text-sm text-ink-muted">Loading shared data...</p></Card>
       </>
     );
   }

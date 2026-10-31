@@ -20,16 +20,13 @@ export function expiry(): string {
 }
 
 export async function signUpPatient(email: string, password: string, displayName: string) {
-  const { data, error } = await supabase!.auth.signUp({ email, password });
+  // Profile row is created by the handle_new_user DB trigger (security definer):
+  // with email confirmation on, sign-up returns no session, so a client-side
+  // insert would fail RLS. Public sign-up is always patient role.
+  const { data, error } = await supabase!.auth.signUp({
+    email, password, options: { data: { display_name: displayName } },
+  });
   if (error) return { error: error.message };
-  const user = data.user;
-  if (user) {
-    // Public sign-up is always patient role; provider trust can never be self-assigned.
-    const { error: pErr } = await supabase!
-      .from("profiles")
-      .upsert({ id: user.id, display_name: displayName, role: "patient" });
-    if (pErr) return { error: pErr.message };
-  }
   return { needsEmailConfirm: !data.session };
 }
 
