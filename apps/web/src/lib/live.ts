@@ -189,6 +189,8 @@ export interface LiveMedication {
   schedule: string;
   scheduleId: string | null;
   takenToday: boolean;
+  taken14: number;
+  total14: number;
 }
 
 export async function fetchMedications(patientId: string): Promise<LiveMedication[]> {
@@ -198,21 +200,26 @@ export async function fetchMedications(patientId: string): Promise<LiveMedicatio
     .eq("patient_id", patientId)
     .eq("review_state", "active");
   const since = dayStartISO();
+  const since14 = dayStartISO(13);
   const { data: doses } = await supabase!
     .from("dose_events")
-    .select("schedule_id, status")
-    .eq("status", "taken")
-    .gte("scheduled_for", since);
-  const taken = new Set((doses ?? []).map((d) => d.schedule_id));
+    .select("schedule_id, status, scheduled_for")
+    .gte("scheduled_for", since14);
+  const todayTaken = new Set(
+    (doses ?? []).filter((d) => d.status === "taken" && d.scheduled_for >= since).map((d) => d.schedule_id)
+  );
   return (meds ?? []).map((m) => {
     const sched = Array.isArray(m.medication_schedules) ? m.medication_schedules[0] : m.medication_schedules;
+    const hist = (doses ?? []).filter((d) => d.schedule_id === sched?.id);
     return {
       id: m.id,
       name: m.label,
       dose: m.dose,
       schedule: sched?.rrule ?? "as directed",
       scheduleId: sched?.id ?? null,
-      takenToday: sched ? taken.has(sched.id) : false,
+      takenToday: sched ? todayTaken.has(sched.id) : false,
+      taken14: hist.filter((d) => d.status === "taken").length,
+      total14: hist.length,
     };
   });
 }

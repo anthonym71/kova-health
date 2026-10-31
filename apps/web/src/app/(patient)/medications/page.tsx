@@ -42,7 +42,7 @@ export default function MedicationsPage() {
 
   return (
     <>
-      <PageHeader title="Medications" subtitle="Schedules, reminders and dose history" />
+      <PageHeader title="Medications" subtitle="Schedules and dose tracking" />
       {!live && <DemoBanner />}
       {notice && <p className="mb-3 text-sm text-status-ok" role="status">{notice}</p>}
 
@@ -78,10 +78,15 @@ export default function MedicationsPage() {
               {live && "takenToday" in med && med.takenToday && <StatePill state="connected" />}
             </div>
             {live ? (
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex items-center gap-3">
                 <SecondaryButton onClick={() => taken(med as LiveMedication)}>
                   {"takenToday" in med && med.takenToday ? "Taken today ✓" : "Mark taken"}
                 </SecondaryButton>
+                {"total14" in med && (med as LiveMedication).total14 > 0 && (
+                  <span className="text-xs text-ink-muted">
+                    Taken {(med as LiveMedication).taken14} of the last {(med as LiveMedication).total14} doses
+                  </span>
+                )}
               </div>
             ) : (
               <>
