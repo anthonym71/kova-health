@@ -52,12 +52,13 @@ export default function MorePage() {
         <h2 className="mb-2 font-semibold text-ink-strong">Your data</h2>
         <p className="text-sm text-ink-body">{RETENTION_NOTICE}</p>
         <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          <button className="min-h-[44px] rounded-full border border-surface-sunken px-4 text-ink-body">Export my data</button>
-          <button className="min-h-[44px] rounded-full border border-status-danger px-4 text-status-danger">Delete my account</button>
+          <button disabled className="min-h-[44px] cursor-not-allowed rounded-full border border-surface-sunken px-4 text-ink-faint opacity-60">Export my data</button>
+          <button disabled className="min-h-[44px] cursor-not-allowed rounded-full border border-surface-sunken px-4 text-ink-faint opacity-60">Delete my account</button>
         </div>
+        <p className="mt-2 text-xs text-ink-faint">Not available in this hackathon build - these controls are shown for design review and do nothing yet.</p>
         <p className="mt-2 text-xs text-ink-faint">
-          Account deletion also removes retained Insights within the declared process. Disconnecting a
-          source, revoking a provider and deleting imported data are separate controls.
+          The full design also removes retained Insights when an account is deleted, and treats
+          disconnecting a source, revoking a provider and deleting imported data as separate controls.
         </p>
       </Card>
     </>

@@ -278,7 +278,7 @@ export const IMPORTED_RECORDS: ImportedRecord[] = [
   { id: "r4", type: "Observation", title: "Resting heart rate 62 bpm", source: "Manual entry", measuredAt: "Oct 30, 2026", expiresInDays: 14 },
 ];
 
-export const RETENTION_NOTICE = `Kova keeps detailed health data for ${HEALTH_DATA_RETENTION_DAYS} days. Only derived Insights (approved aggregates like weekly averages) are kept longer. Deleting a source, a provider's access and imported data are separate controls.`;
+export const RETENTION_NOTICE = `Detailed health entries stop being readable in the app ${HEALTH_DATA_RETENTION_DAYS} days after they are recorded (access expires; this build runs no automatic purge). Only derived Insights (approved aggregates like weekly averages) are kept longer. Deleting a source, a provider's access and imported data are separate controls.`;
 
 export const EMERGENCY_COPY =
   "If this is an emergency, call your local emergency number now (911 in the US, 112/999 in the UK and EU). This app cannot call emergency services for you.";

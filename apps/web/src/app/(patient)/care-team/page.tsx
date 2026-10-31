@@ -8,6 +8,8 @@ import { LiveCareTeam } from "@/components/live-care-team";
 export default function CareTeamPage() {
   const [draft, setDraft] = useState("");
   const [sent, setSent] = useState<typeof MESSAGES>([]);
+  const [revoked, setRevoked] = useState(false);
+  const [demoNote, setDemoNote] = useState<string | null>(null);
   const session = useSession();
   if (session.status === "signed-in") return <LiveCareTeam uid={session.userId} />;
   if (session.status === "loading") return null;
@@ -27,13 +29,17 @@ export default function CareTeamPage() {
         </div>
         <div className="mt-3 rounded-xl bg-surface-sunken p-3 text-sm text-ink-body">
           Sharing: activity, sleep, hydration · Oct 17 onward · expires Nov 14 ·{" "}
-          <button className="font-medium text-status-danger underline">Revoke access</button>
+          {revoked ? (
+            <span className="font-medium text-status-danger">Access revoked (demo)</span>
+          ) : (
+            <button onClick={() => setRevoked(true)} className="font-medium text-status-danger underline">Revoke access</button>
+          )}
           <p className="mt-1 text-xs text-ink-faint">
             Revocation blocks future reads, messages about new data, exports and realtime updates immediately.
           </p>
         </div>
         <div className="mt-3 flex gap-2">
-          <SecondaryButton>Invite another provider</SecondaryButton>
+          <SecondaryButton onClick={() => setDemoNote("Demo walkthrough - no invitation email is actually sent.")}>Invite another provider</SecondaryButton>
         </div>
         <p className="mt-2 text-xs text-ink-faint">
           Invitations are single-use, expiring links with no health details. Providers are independently
@@ -69,7 +75,7 @@ export default function CareTeamPage() {
               <p className="text-sm text-ink-muted">{a.clinician} · {a.specialty}</p>
               <p className="mt-1 text-xs text-ink-faint">{a.adapter}</p>
               <div className="mt-2">
-                <SecondaryButton>Join video (partner-hosted, demo)</SecondaryButton>
+                <SecondaryButton onClick={() => setDemoNote("Demo adapter - no real video call is started.")}>Join video (partner-hosted, demo)</SecondaryButton>
               </div>
             </div>
           ))}
@@ -90,6 +96,7 @@ export default function CareTeamPage() {
             </div>
           ))}
         </div>
+        {demoNote ? <p className="mb-3 rounded-xl bg-surface-sunken p-3 text-xs text-ink-body">{demoNote}</p> : null}
         <form
           className="flex gap-2"
           onSubmit={(e) => {

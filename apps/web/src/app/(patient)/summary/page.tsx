@@ -34,7 +34,11 @@ export default function SummaryPage() {
           </p>
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <PrimaryButton>Generate PDF (demo)</PrimaryButton>
+          {__session.status === "signed-in" ? (
+            <button disabled className="min-h-[44px] cursor-not-allowed rounded-full bg-surface-sunken px-5 text-sm text-ink-faint opacity-70">Generate PDF - unavailable in this build</button>
+          ) : (
+            <PrimaryButton>Generate PDF (demo)</PrimaryButton>
+          )}
           <StatePill state="demo" />
         </div>
       </Card>

@@ -81,7 +81,7 @@ export default function GuidancePage() {
             this demo, and core tracking, your records and emergency help never require it.
           </p>
           <div className="mt-4">
-            <PrimaryButton onClick={() => {}} >Try the simulated intake</PrimaryButton>
+            <PrimaryButton onClick={() => { setStep(0); setDone(false); setEmergency(false); }}>Start / restart the simulated intake below</PrimaryButton>
           </div>
         </Card>
       ) : null}
