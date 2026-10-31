@@ -1,16 +1,20 @@
 "use client";
 import { useState } from "react";
 import { Card, DemoBanner, PageHeader, PrimaryButton, StatePill } from "@/components/ui";
+import { LiveDemoNotice } from "@/components/ui";
+import { useSession } from "@/lib/use-session";
 
 const CATEGORIES = ["Conditions", "Allergies", "Medications", "Activity", "Sleep", "Hydration"];
 
 export default function SummaryPage() {
+  const __session = useSession();
   const [selected, setSelected] = useState<string[]>(["Medications"]);
   const toggle = (c: string) =>
     setSelected((s) => (s.includes(c) ? s.filter((x) => x !== c) : [...s, c]));
   return (
     <>
       <PageHeader title="Health summary" subtitle="Compose and share a snapshot with expiring access" />
+      {__session.status === "signed-in" && <LiveDemoNotice />}
       <DemoBanner />
       <Card className="mb-4">
         <h2 className="mb-3 font-semibold text-ink-strong">Choose what to include</h2>

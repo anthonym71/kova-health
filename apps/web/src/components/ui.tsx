@@ -38,6 +38,17 @@ export function StatePill({ state }: { state: keyof typeof STATE_STYLES }) {
   );
 }
 
+export function LiveDemoNotice() {
+  return (
+    <div className="mb-4 rounded-xl border border-status-warn bg-status-warn/10 px-4 py-3" role="note">
+      <p className="text-sm text-ink-body">
+        <strong>Design preview.</strong> This screen is not connected to your account in this hackathon
+        build. Everything below is fabricated sample content, not your data, and its actions do nothing.
+      </p>
+    </div>
+  );
+}
+
 export function DemoBanner() {
   return (
     <div className="mb-4 rounded-card border border-brand-lilac/30 bg-brand-lilacsoft px-4 py-3 text-sm text-ink-body">

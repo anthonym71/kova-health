@@ -1,11 +1,15 @@
 "use client";
 import { Card, DemoBanner, PageHeader, StatePill } from "@/components/ui";
+import { LiveDemoNotice } from "@/components/ui";
+import { useSession } from "@/lib/use-session";
 import { IMPORTED_RECORDS } from "@/lib/demo-data";
 
 export default function RecordsPage() {
+  const __session = useSession();
   return (
     <>
       <PageHeader title="Records" subtitle="Imported clinical records with provenance" />
+      {__session.status === "signed-in" && <LiveDemoNotice />}
       <DemoBanner />
       <Card className="mb-4">
         <ol className="list-decimal space-y-1 pl-5 text-sm text-ink-body">

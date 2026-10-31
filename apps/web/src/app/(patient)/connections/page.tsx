@@ -1,5 +1,7 @@
 "use client";
 import { Card, DemoBanner, PageHeader, StatePill } from "@/components/ui";
+import { LiveDemoNotice } from "@/components/ui";
+import { useSession } from "@/lib/use-session";
 import { CONNECTIONS } from "@/lib/demo-data";
 
 const SECTIONS = [
@@ -9,9 +11,11 @@ const SECTIONS = [
 ];
 
 export default function ConnectionsPage() {
+  const __session = useSession();
   return (
     <>
       <PageHeader title="Connections" subtitle="Records, phone health platforms and wearables" />
+      {__session.status === "signed-in" && <LiveDemoNotice />}
       <DemoBanner />
       {SECTIONS.map((sec) => (
         <div key={sec.kind} className="mb-6">

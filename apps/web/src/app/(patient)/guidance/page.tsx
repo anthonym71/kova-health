@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { Card, DemoBanner, PageHeader, PrimaryButton, StatePill } from "@/components/ui";
+import { LiveDemoNotice } from "@/components/ui";
+import { useSession } from "@/lib/use-session";
 import { EMERGENCY_COPY } from "@/lib/demo-data";
 
 /**
@@ -38,6 +40,7 @@ const QUESTIONS = [
 ];
 
 export default function GuidancePage() {
+  const __session = useSession();
   const subscribed = false; // demo: no real billing; entitlement comes from server-verified events only
   const [step, setStep] = useState(0);
   const [emergency, setEmergency] = useState(false);
@@ -55,6 +58,7 @@ export default function GuidancePage() {
   return (
     <>
       <PageHeader title="Symptom Guidance" subtitle="Guidance Plus add-on" />
+      {__session.status === "signed-in" && <LiveDemoNotice />}
 
       {/* Emergency help: always visible, never behind paywall or login */}
       <div className="mb-4 rounded-card border-2 border-status-danger bg-status-dangersoft p-4">
