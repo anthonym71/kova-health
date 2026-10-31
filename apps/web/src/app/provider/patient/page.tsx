@@ -13,7 +13,7 @@ function LivePatientDetail() {
   const uid = live ? session.userId : null;
   const [patient, setPatient] = useState<PatientRow | null>(null);
   const [week, setWeek] = useState<WeekPoint[]>([]);
-  const [goals, setGoals] = useState<{ steps: number | null; sleepHours: number | null; waterMl: number | null }>({ steps: null, sleepHours: null, waterMl: null });
+  const [goals, setGoals] = useState<{ steps: number | undefined; sleepHours: number | undefined; waterMl: number | undefined }>({ steps: undefined, sleepHours: undefined, waterMl: undefined });
   const [task, setTask] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [denied, setDenied] = useState(false);
@@ -27,7 +27,7 @@ function LivePatientDetail() {
       if (!p.categories.length) return setDenied(true);
       fetchSharedMetrics(patientId, p.categories).then(setWeek);
     });
-    fetchGoals(patientId).then((g) => setGoals({ steps: g.steps, sleepHours: g.sleepHours, waterMl: g.waterMl })).catch(() => setGoals({ steps: null, sleepHours: null, waterMl: null }));
+    fetchGoals(patientId).then((g) => setGoals({ steps: g.steps, sleepHours: g.sleepHours, waterMl: g.waterMl })).catch(() => setGoals({ steps: undefined, sleepHours: undefined, waterMl: undefined }));
   }, [uid, patientId]);
 
   if (!live) {
