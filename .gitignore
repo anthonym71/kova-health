@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+dist/
+.expo/
+*.log
+.env
+.env.local
+.env.*.local
+.vercel
+.DS_Store
+coverage/
+*.tsbuildinfo
+# never commit secrets or real credential files
+**/service-account*.json
+**/*-secrets.json

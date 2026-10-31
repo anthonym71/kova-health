@@ -1,0 +1,43 @@
+{
+  "cli": { "appVersionSource": "remote" },
+  "build": {
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development",
+      "env": { "APP_VARIANT": "demo" },
+      "ios": { "simulator": true },
+      "android": { "buildType": "apk" }
+    },
+    "development-device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development",
+      "env": { "APP_VARIANT": "demo" },
+      "ios": { "simulator": false },
+      "android": { "buildType": "apk" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "environment": "preview",
+      "env": { "APP_VARIANT": "demo" },
+      "android": { "buildType": "apk" }
+    },
+    "beta-store": {
+      "distribution": "store",
+      "environment": "preview",
+      "env": { "APP_VARIANT": "demo" },
+      "autoIncrement": true
+    },
+    "production": {
+      "distribution": "store",
+      "environment": "production",
+      "env": { "APP_VARIANT": "production" },
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "beta-store": { "android": { "track": "internal" } },
+    "production": { "android": { "track": "internal" } }
+  }
+}

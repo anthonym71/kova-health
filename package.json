@@ -1,0 +1,20 @@
+{
+  "name": "kova-health",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Kova Health - synthetic-data MVP. Monorepo: Next.js web app, Expo native patient app, shared packages, Supabase migrations.",
+  "workspaces": [
+    "apps/web",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/web",
+    "build": "npm run build --workspace apps/web",
+    "lint": "npm run lint --workspace apps/web",
+    "typecheck": "npm run typecheck --workspace apps/web",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Kova Health (Demo)",
+    "slug": "kova-health-demo",
+    "scheme": "kova-demo",
+    "version": "0.1.0",
+    "ios": {
+      "bundleIdentifier": "health.kova.demo",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "Kova reads the health categories you choose to show them in the app and, with your consent, share them with your care team.",
+        "NSCameraUsageDescription": "Kova uses the camera for meal photos and barcode scanning, only when you ask."
+      }
+    },
+    "android": {
+      "package": "health.kova.demo",
+      "permissions": ["CAMERA", "android.permission.health.READ_STEPS"]
+    },
+    "plugins": ["expo-router", "expo-secure-store"],
+    "extra": {
+      "apiUrl": "https://your-vercel-demo-url.example.com"
+    }
+  }
+}
