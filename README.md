@@ -57,3 +57,18 @@ See `docs/INTEGRATION-STATUS.md` for the verified/unverified integration matrix 
 `docs/SECURITY-RETENTION.md` for the retention design. The native app, real
 telehealth network, real billing and real clinical vendors are NOT built; each has
 a documented dependency and acceptance flow in `docs/MVP-PLAN.md`.
+
+## Static export (shared hosting, path prefix)
+
+The web app can ship as plain static files for hosts without Node.js:
+
+```
+cd apps/web
+KOVA_STATIC_EXPORT=1 npx next build   # or: npm run build:static
+```
+
+Upload the contents of `apps/web/out/` to the web root of the (sub)domain, e.g.
+`https://kova.example.com/` -> Today page at `/today/`. To host under a path
+prefix instead, set `KOVA_BASE_PATH=/kova` when building; the prefix is baked
+into asset and link URLs. All data remains synthetic; there is no server
+component in this mode.

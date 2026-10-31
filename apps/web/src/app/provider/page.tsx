@@ -24,7 +24,7 @@ export default function ProviderDashboard() {
       </Card>
       <div className="space-y-3">
         {PATIENTS.map((p) => (
-          <a key={p.id} href={`/provider/patients/${p.id}`} className="block">
+          <a key={p.id} href={`patients/${p.id}/`} className="block">
             <Card className="hover:border-brand-blue">
               <div className="flex items-start justify-between">
                 <div>

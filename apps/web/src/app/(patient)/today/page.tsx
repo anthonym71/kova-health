@@ -55,7 +55,7 @@ export default function TodayPage() {
         <Card>
           <div className="mb-3 flex items-center justify-between">
             <h3 className="font-semibold text-ink-strong">Steps this week</h3>
-            <a href="/track" className="text-sm font-medium text-brand-teal">7/15-day views →</a>
+            <a href="track/" className="text-sm font-medium text-brand-teal">7/15-day views →</a>
           </div>
           <BarChart values={WEEK_METRICS.map((d) => d.steps)} goal={GOALS.steps} labels={WEEK_METRICS.map((d) => d.day)} unit="steps" />
         </Card>
