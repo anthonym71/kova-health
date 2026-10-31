@@ -136,3 +136,8 @@ create policy plan_items_provider_insert on care_plan_items
     exists (select 1 from care_plans p
       where p.id = care_plan_items.care_plan_id and p.author_provider_id = auth.uid())
   );
+
+-- Fix-up after live audit (2026-10-31): internal ops tables had no RLS and were
+-- reachable via PostgREST default grants. Enabled with no client policies = service-role only.
+alter table retention_jobs enable row level security;
+alter table source_tombstones enable row level security;
