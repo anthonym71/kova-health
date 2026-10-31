@@ -2,10 +2,15 @@
 import { useState } from "react";
 import { Card, DemoBanner, PageHeader, PrimaryButton, SecondaryButton, StatePill } from "@/components/ui";
 import { APPOINTMENTS, CARE_PLAN, DEMO_PROVIDER, MESSAGES } from "@/lib/demo-data";
+import { useSession } from "@/lib/use-session";
+import { LiveCareTeam } from "@/components/live-care-team";
 
 export default function CareTeamPage() {
   const [draft, setDraft] = useState("");
   const [sent, setSent] = useState<typeof MESSAGES>([]);
+  const session = useSession();
+  if (session.status === "signed-in") return <LiveCareTeam uid={session.userId} />;
+  if (session.status === "loading") return null;
   return (
     <>
       <PageHeader title="Care Team" subtitle="Provider Connect - invitations, sharing, messages and plans" />

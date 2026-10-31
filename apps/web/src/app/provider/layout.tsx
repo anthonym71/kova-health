@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { AuthGate } from "@/components/auth-gate";
+import { SignOutButton, WhoAmI } from "@/components/sign-out";
 
 export default function ProviderLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,11 +10,12 @@ export default function ProviderLayout({ children }: { children: React.ReactNode
           Kova <span className="text-brand-blue">Provider</span>
         </Link>
         <div className="flex items-center gap-4 text-sm">
-          <span className="text-ink-muted">Dr. Priya Nair (synthetic)</span>
+          <WhoAmI />
           <Link href="/today" className="font-medium text-brand-teal">Patient view →</Link>
+          <SignOutButton className="font-medium text-status-danger" />
         </div>
       </nav>
-      <main className="mx-auto max-w-5xl px-4 py-6 md:px-8">{children}</main>
+      <main className="mx-auto max-w-5xl px-4 py-6 md:px-8"><AuthGate requireRole="provider">{children}</AuthGate></main>
     </div>
   );
 }

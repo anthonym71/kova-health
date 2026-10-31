@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SignOutButton } from "./sign-out";
 
 const TABS = [
   { href: "/today", label: "Today", icon: "◐" },
@@ -33,7 +34,8 @@ export function PatientNav() {
           <Link href="/provider" className="block rounded-xl px-3 py-2 text-sm text-ink-muted hover:bg-surface-sunken">
             Provider workspace →
           </Link>
-          <p className="px-3 text-[11px] leading-snug text-ink-faint">Synthetic demo build. Not for real patient data.</p>
+          <SignOutButton />
+          <p className="px-3 text-[11px] leading-snug text-ink-faint">Kova Health. Not for real clinical use.</p>
         </div>
       </nav>
       {/* Mobile bottom tabs */}
